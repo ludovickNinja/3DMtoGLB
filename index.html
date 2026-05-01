@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Buddy - 3DM to GLB Converter</title>
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+
+        <!-- Drag and drop overlay -->
+        <div id="dropOverlay" class="drop-overlay hidden">
+            <div class="drop-overlay-content">
+                <div class="drop-overlay-icon">📁</div>
+                <div class="drop-overlay-text">Drop .3dm file here</div>
+            </div>
+        </div>
+
+        <!-- Top toolbar -->
+        <div id="toolbar" class="toolbar">
+            <div class="toolbar-section">
+                <button id="fitBtn" class="btn btn-small" title="Fit to model">Fit</button>
+                <button id="resetCameraBtn" class="btn btn-small" title="Reset camera">Reset</button>
+                <button id="toggleGridBtn" class="btn btn-small" title="Toggle grid">Grid</button>
+                <button id="toggleAxesBtn" class="btn btn-small" title="Toggle axes">Axes</button>
+            </div>
+            <div class="toolbar-section">
+                <span id="status" class="status-text"></span>
+            </div>
+            <div class="toolbar-section">
+                <button id="exportBtn" class="btn btn-primary" title="Export as GLB">Export</button>
+            </div>
+        </div>
+
+        <!-- Left panel: Objects/Layers -->
+        <div id="leftPanel" class="left-panel">
+            <div class="panel-header">
+                <h3>Objects & Layers</h3>
+            </div>
+            <div class="panel-tabs">
+                <button class="tab-btn active" data-tab="layers">Layers</button>
+                <button class="tab-btn" data-tab="objects">Objects</button>
+            </div>
+
+            <!-- Layers tab -->
+            <div id="layersTab" class="tab-content active">
+                <div class="layer-controls">
+                    <input type="text" id="newLayerInput" class="input-field" placeholder="New layer name">
+                    <button id="addLayerBtn" class="btn btn-small">Add</button>
+                </div>
+                <div id="layersList" class="layers-list"></div>
+            </div>
+
+            <!-- Objects tab -->
+            <div id="objectsTab" class="tab-content">
+                <div id="objectsList" class="objects-list"></div>
+            </div>
+        </div>
+
+        <!-- Right panel: Inspector -->
+        <div id="rightPanel" class="right-panel">
+            <div class="panel-header">
+                <h3>Inspector</h3>
+            </div>
+            <div id="inspectorContent" class="inspector-content">
+                <div class="inspector-empty">No object selected</div>
+            </div>
+        </div>
+
+        <!-- Export modal -->
+        <div id="exportModal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Export GLB</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="exportVisibleOnly" checked>
+                        <span>Export visible objects only</span>
+                    </label>
+                    <div class="export-info">
+                        <div id="exportObjectCount">Objects: 0</div>
+                        <div id="exportTriangleCount">Triangles: 0</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="exportCancelBtn" class="btn">Cancel</button>
+                    <button id="exportConfirmBtn" class="btn btn-primary">Export</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- File input (hidden) -->
+        <input type="file" id="fileInput" accept=".3dm" style="display: none;">
+    </div>
+
+    <!-- Three.js and plugins from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@r128/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@r128/examples/js/loaders/Rhino3dmLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@r128/examples/js/exporters/GLTFExporter.js"></script>
+
+    <!-- App scripts -->
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
