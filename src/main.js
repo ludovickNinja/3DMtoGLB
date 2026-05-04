@@ -65,10 +65,17 @@ class App {
 
     setupFileInput() {
         const fileInput = document.getElementById('fileInput');
+
         fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
+            if (e.target.files && e.target.files.length > 0) {
                 this.loadFile(e.target.files[0]);
             }
+        });
+
+        // Handle cancel/dismiss on mobile
+        fileInput.addEventListener('cancel', () => {
+            // Reset for next use
+            fileInput.value = '';
         });
     }
 
@@ -510,7 +517,13 @@ class App {
 
     setupToolbar() {
         document.getElementById('importBtn').addEventListener('click', () => {
-            document.getElementById('fileInput').click();
+            const fileInput = document.getElementById('fileInput');
+            // Reset value to allow re-selecting the same file
+            fileInput.value = '';
+            // Small delay to ensure input is ready on iOS
+            setTimeout(() => {
+                fileInput.click();
+            }, 10);
         });
 
         document.getElementById('fitBtn').addEventListener('click', () => {
