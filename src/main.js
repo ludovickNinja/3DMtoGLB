@@ -460,6 +460,10 @@ class App {
     }
 
     setupToolbar() {
+        document.getElementById('importBtn').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+
         document.getElementById('fitBtn').addEventListener('click', () => {
             fitCamera(this.viewer.camera, this.viewer.controls, this.activeModelRoot);
         });
