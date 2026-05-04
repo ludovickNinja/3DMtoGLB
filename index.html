@@ -94,8 +94,8 @@
             </div>
         </div>
 
-        <!-- File input (hidden) -->
-        <input type="file" id="fileInput" accept=".3dm" style="display: none;">
+        <!-- File input (hidden but accessible) -->
+        <input type="file" id="fileInput" accept=".3dm" style="display: none; position: fixed; left: -9999px; top: -9999px;" aria-hidden="true">
     </div>
 
     <!-- Three.js and plugins from CDN -->
