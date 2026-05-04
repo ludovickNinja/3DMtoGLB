@@ -4,11 +4,12 @@ A browser-based static web app for converting Rhino .3dm files to glTF 2.0 .glb 
 
 ## Features
 
-- **Drag-and-drop .3dm file loading** - Simply drag a Rhino file onto the page
-- **3D preview with Three.js** - Render and inspect your models in real-time
+- **Drag-and-drop & import button** - Drag a Rhino file or click Import to select
+- **3D preview with Three.js r163** - Latest rendering with advanced material support
 - **Object selection and inspection** - Click objects to select, rename, and edit properties
 - **Layer management** - View, create, and assign objects to layers
-- **Material editing** - Adjust color, metalness, roughness, and opacity
+- **Material presets** - Gemstones (Diamond, Sapphire, Ruby, Emerald) and metals (Gold, Rose Gold, Silver, Copper)
+- **Advanced material editing** - Color, metalness, roughness, opacity, and dispersion (chromatic aberration)
 - **Advanced visibility controls** - Toggle layer visibility, isolate objects, hide/show all
 - **GLB export** - Export visible or all objects as binary .glb files
 - **Scene tools** - Grid, axes, camera reset, fit to model
@@ -107,7 +108,13 @@ npx http-server
 - **Name**: Rename the selected object
 - **Layer**: Assign to a different layer
 - **Type**: View object geometry type
-- **Material**: Edit color, metalness, roughness, opacity
+- **Material**: 
+  - **Presets**: Quick apply gemstone and metal materials (Diamond, Sapphire, Ruby, Emerald, Yellow/Rose/White Gold, Silver, Copper, Glass, etc.)
+  - **Color**: Change material color
+  - **Metalness**: 0 (non-metal) to 1 (full metal)
+  - **Roughness**: 0 (polished) to 1 (matte)
+  - **Dispersion**: 0 (none) to 1 (full chromatic aberration)
+  - **Opacity**: Transparency control (if supported)
 - **Buttons**: Isolate, Hide, Show All
 
 **Objects Tab (Left):**
@@ -130,6 +137,33 @@ npx http-server
 - **Grid**: Toggle grid helper (for reference)
 - **Axes**: Toggle XYZ axes indicator
 - **Export**: Open export dialog
+
+### Material Presets
+
+Quick-apply professionally-tuned material settings. Available presets include:
+
+**Gemstones (High Dispersion):**
+- **Diamond** - Pure white, highly reflective, brilliant light refraction
+- **Sapphire** - Deep blue with high dispersion for iridescence
+- **Ruby** - Deep red with high dispersion for iridescence
+- **Emerald** - Emerald green with high dispersion for iridescence
+
+**Precious Metals:**
+- **Yellow Gold** - Warm metallic gold tone
+- **Rose Gold** - Pink/copper metallic tone
+- **White Gold** - Cool metallic tone
+- **Silver** - Bright metallic silver
+- **Copper** - Warm reddish metal
+
+**Common Materials:**
+- **Glass** - Transparent with slight dispersion
+- **Plastic** - Matte non-metallic finish
+- **Rubber** - Very rough matte surface
+- **Matte Paint** - Soft matte finish
+- **Mirror** - Perfect reflective surface
+- **Brushed Metal** - Textured metallic finish
+
+Select a preset from the **Presets** dropdown in the Inspector panel. You can then fine-tune individual properties (color, metalness, etc.) as needed.
 
 ### Exporting
 
@@ -165,8 +199,10 @@ npx http-server
    - Custom plug-in geometry may not import correctly
 
 5. **Material Support**
-   - Only basic PBR materials (color, metalness, roughness, opacity)
+   - Full PBR support (color, metalness, roughness, opacity, dispersion)
+   - Dispersion enables chromatic aberration/iridescence effects
    - Advanced Rhino materials and textures are not supported
+   - Material edits are temporary and affect current session only
 
 6. **No Undo/Redo**
    - Changes are immediate and cannot be undone
@@ -227,13 +263,22 @@ npx http-server
 
 This project is provided as-is for educational and commercial use.
 
+## Dependencies
+
+- **Three.js r163** - Latest 3D graphics library with advanced PBR materials
+- **Rhino3dmLoader** - Parse and load Rhino .3dm files
+- **GLTFExporter** - Export scenes as glTF 2.0 binary (.glb) files
+- **OrbitControls** - Intuitive mouse/touch camera navigation
+
+All dependencies are loaded from CDN for maximum compatibility with GitHub Pages.
+
 ## Credits
 
-- **Three.js** - 3D graphics library
-- **Rhino3dmLoader** - Rhino file loading
-- **GLTFExporter** - glTF export functionality
-- **OrbitControls** - Camera navigation
+Built for the Rhino/Grasshopper community with latest Three.js. Features include:
+- **Dispersion rendering** - Chromatic aberration for realistic light refraction
+- **Modern PBR materials** - Full physically-based rendering pipeline
+- **Zero-dependency setup** - Runs entirely in the browser, no build step required
 
 ---
 
-**Built for the Rhino/Grasshopper community with Three.js** 🎨
+**Design Buddy 3DM to GLB Converter** - Transform your Rhino models for web 🎨
