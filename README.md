@@ -8,6 +8,7 @@ A browser-based static web app for converting Rhino .3dm files to glTF 2.0 .glb 
 - **3D preview with Three.js r163** - Latest rendering with advanced material support
 - **Object selection and inspection** - Click objects to select, rename, and edit properties
 - **Layer management** - View, create, and assign objects to layers
+- **Material presets** - Gemstones (Diamond, Sapphire, Ruby, Emerald) and metals (Gold, Rose Gold, Silver, Copper)
 - **Advanced material editing** - Color, metalness, roughness, opacity, and dispersion (chromatic aberration)
 - **Advanced visibility controls** - Toggle layer visibility, isolate objects, hide/show all
 - **GLB export** - Export visible or all objects as binary .glb files
@@ -107,7 +108,13 @@ npx http-server
 - **Name**: Rename the selected object
 - **Layer**: Assign to a different layer
 - **Type**: View object geometry type
-- **Material**: Edit color, metalness, roughness, opacity, and dispersion (chromatic aberration)
+- **Material**: 
+  - **Presets**: Quick apply gemstone and metal materials (Diamond, Sapphire, Ruby, Emerald, Yellow/Rose/White Gold, Silver, Copper, Glass, etc.)
+  - **Color**: Change material color
+  - **Metalness**: 0 (non-metal) to 1 (full metal)
+  - **Roughness**: 0 (polished) to 1 (matte)
+  - **Dispersion**: 0 (none) to 1 (full chromatic aberration)
+  - **Opacity**: Transparency control (if supported)
 - **Buttons**: Isolate, Hide, Show All
 
 **Objects Tab (Left):**
@@ -130,6 +137,33 @@ npx http-server
 - **Grid**: Toggle grid helper (for reference)
 - **Axes**: Toggle XYZ axes indicator
 - **Export**: Open export dialog
+
+### Material Presets
+
+Quick-apply professionally-tuned material settings. Available presets include:
+
+**Gemstones (High Dispersion):**
+- **Diamond** - Pure white, highly reflective, brilliant light refraction
+- **Sapphire** - Deep blue with high dispersion for iridescence
+- **Ruby** - Deep red with high dispersion for iridescence
+- **Emerald** - Emerald green with high dispersion for iridescence
+
+**Precious Metals:**
+- **Yellow Gold** - Warm metallic gold tone
+- **Rose Gold** - Pink/copper metallic tone
+- **White Gold** - Cool metallic tone
+- **Silver** - Bright metallic silver
+- **Copper** - Warm reddish metal
+
+**Common Materials:**
+- **Glass** - Transparent with slight dispersion
+- **Plastic** - Matte non-metallic finish
+- **Rubber** - Very rough matte surface
+- **Matte Paint** - Soft matte finish
+- **Mirror** - Perfect reflective surface
+- **Brushed Metal** - Textured metallic finish
+
+Select a preset from the **Presets** dropdown in the Inspector panel. You can then fine-tune individual properties (color, metalness, etc.) as needed.
 
 ### Exporting
 

@@ -5,6 +5,7 @@ import { initInspector } from './inspector.js';
 import { initLayerManager } from './layerManager.js';
 import { exportGLB } from './exporter.js';
 import { fitCamera, resetCamera, initSceneTools } from './sceneTools.js';
+import { MATERIAL_PRESETS, applyMaterialPreset, getPresetsList } from './materialPresets.js';
 
 class App {
     constructor() {
@@ -260,6 +261,24 @@ class App {
         const material = this.selectedObject.material;
         let html = '<div class="inspector-section"><label>Material</label>';
 
+        // Material Presets
+        const presets = getPresetsList();
+        html += `
+            <div class="material-prop">
+                <label>Presets</label>
+                <select id="matPresetSelect" class="input-field">
+                    <option value="">-- Select Preset --</option>
+        `;
+
+        presets.forEach(({ key, name }) => {
+            html += `<option value="${key}">${name}</option>`;
+        });
+
+        html += `
+                </select>
+            </div>
+        `;
+
         // Color
         if (material.color) {
             const color = material.color.getHexString();
@@ -315,6 +334,12 @@ class App {
 
         // Attach listeners after DOM update
         setTimeout(() => {
+            document.getElementById('matPresetSelect')?.addEventListener('change', (e) => {
+                if (e.target.value) {
+                    this.applyMaterialPreset(e.target.value);
+                }
+            });
+
             document.getElementById('matColorInput')?.addEventListener('change', (e) => {
                 this.setMaterialColor(e.target.value);
             });
@@ -371,6 +396,13 @@ class App {
     setMaterialColor(hexColor) {
         if (!this.selectedObject?.material) return;
         this.selectedObject.material.color.setHex(parseInt(hexColor.substring(1), 16));
+        this.viewer.render();
+    }
+
+    applyMaterialPreset(presetKey) {
+        if (!this.selectedObject?.material) return;
+        applyMaterialPreset(this.selectedObject.material, presetKey);
+        this.updateInspector();
         this.viewer.render();
     }
 
