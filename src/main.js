@@ -68,15 +68,21 @@ class App {
 
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files.length > 0) {
-                this.loadFile(e.target.files[0]);
+                const file = e.target.files[0];
+                if (file) {
+                    this.loadFile(file);
+                }
+                // Reset after loading
+                setTimeout(() => {
+                    fileInput.value = '';
+                }, 100);
             }
-        });
+        }, false);
 
-        // Handle cancel/dismiss on mobile
-        fileInput.addEventListener('cancel', () => {
-            // Reset for next use
-            fileInput.value = '';
-        });
+        // Handle click for logging (debug)
+        fileInput.addEventListener('click', (e) => {
+            console.log('File input clicked');
+        }, false);
     }
 
     async loadFile(file) {
@@ -516,14 +522,29 @@ class App {
     }
 
     setupToolbar() {
-        document.getElementById('importBtn').addEventListener('click', () => {
-            const fileInput = document.getElementById('fileInput');
-            // Reset value to allow re-selecting the same file
+        const importBtn = document.getElementById('importBtn');
+        const fileInput = document.getElementById('fileInput');
+
+        const triggerFileInput = () => {
+            this.setStatus('Opening file picker...');
             fileInput.value = '';
-            // Small delay to ensure input is ready on iOS
+            fileInput.focus();
             setTimeout(() => {
                 fileInput.click();
-            }, 10);
+            }, 50);
+        };
+
+        importBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            triggerFileInput();
+        });
+
+        // Support touch events explicitly (important for iOS)
+        importBtn.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            triggerFileInput();
         });
 
         document.getElementById('fitBtn').addEventListener('click', () => {
