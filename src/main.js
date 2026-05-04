@@ -291,6 +291,16 @@ class App {
             `;
         }
 
+        // Dispersion (chromatic aberration effect)
+        if (material.dispersion !== undefined) {
+            html += `
+                <div class="material-prop">
+                    <label>Dispersion <span id="dispersionSliderVal">${material.dispersion.toFixed(3)}</span></label>
+                    <input type="range" id="matDispersionInput" class="slider" min="0" max="1" step="0.001" value="${material.dispersion}">
+                </div>
+            `;
+        }
+
         // Opacity
         if (material.opacity !== undefined && material.transparent) {
             html += `
@@ -320,6 +330,13 @@ class App {
                 const val = parseFloat(e.target.value);
                 this.selectedObject.material.roughness = val;
                 document.getElementById('roughSliderVal').textContent = val.toFixed(2);
+                this.viewer.render();
+            });
+
+            document.getElementById('matDispersionInput')?.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                this.selectedObject.material.dispersion = val;
+                document.getElementById('dispersionSliderVal').textContent = val.toFixed(3);
                 this.viewer.render();
             });
 
