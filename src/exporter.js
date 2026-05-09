@@ -1,10 +1,11 @@
+import * as THREE from 'three';
+import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+
 export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
     return new Promise((resolve, reject) => {
-        // Create a copy of the scene to export
         let exportRoot;
 
         if (visibleOnly) {
-            // Clone only visible objects
             exportRoot = new THREE.Group();
             exportRoot.name = modelRoot.name;
 
@@ -13,11 +14,11 @@ export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
 
                 if (child.visible && (child.isMesh || child.isLine || child.isPoints)) {
                     const clone = child.clone();
+                    clone.userData = JSON.parse(JSON.stringify(child.userData || {}));
                     exportRoot.add(clone);
                 }
             });
         } else {
-            // Use the whole tree
             exportRoot = modelRoot;
         }
 
@@ -25,13 +26,13 @@ export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
 
         const options = {
             binary: true,
-            onlyVisible: false // We handle visibility above
+            onlyVisible: false,
+            includeCustomExtensions: true
         };
 
         exporter.parse(
             exportRoot,
             (gltf) => {
-                // gltf is an ArrayBuffer for binary export
                 const blob = new Blob([gltf], { type: 'application/octet-stream' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');

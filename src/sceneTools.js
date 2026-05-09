@@ -1,3 +1,5 @@
+import * as THREE from 'three';
+
 export function initSceneTools(scene) {
     // Add grid
     const gridHelper = new THREE.GridHelper(500, 50, 0x444444, 0x222222);
