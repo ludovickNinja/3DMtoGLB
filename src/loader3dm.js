@@ -1,42 +1,62 @@
+import * as THREE from 'three';
+import { Rhino3dmLoader } from 'three/addons/loaders/3DMLoader.js';
+
 export async function load3DMFile(arrayBuffer) {
     return new Promise((resolve, reject) => {
         const loader = new Rhino3dmLoader();
 
-        // Initialize the worker for the loader
-        loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@7/');
+        // rhino3dm WASM library is loaded from CDN
+        loader.setLibraryPath('https://cdn.jsdelivr.net/npm/rhino3dm@8.4.0/');
 
-        // Parse the arraybuffer
         loader.parse(arrayBuffer, (object) => {
             if (!object) {
                 reject(new Error('Failed to parse 3dm file'));
                 return;
             }
 
-            // Wrap in a group for easier manipulation
             const root = new THREE.Group();
             root.name = 'ModelRoot';
 
-            // Traverse and normalize materials and geometry
+            // Layer table from the 3dm file: [{ name, color, visible, ... }, ...]
+            const layers = object.userData?.layers || [];
+
             object.traverse((child) => {
-                // Ensure all geometries have proper normals
-                if (child.geometry) {
-                    if (!child.geometry.attributes.normal) {
-                        child.geometry.computeVertexNormals();
-                    }
+                if (child.geometry && !child.geometry.attributes.normal) {
+                    child.geometry.computeVertexNormals();
                 }
 
-                // Ensure materials are properly set
-                if (!child.material) {
-                    if (child.isMesh) {
-                        child.material = new THREE.MeshStandardMaterial({
-                            color: 0x888888,
-                            metalness: 0.2,
-                            roughness: 0.8
-                        });
-                    }
+                if (child.isMesh && !child.material) {
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0x888888,
+                        metalness: 0.2,
+                        roughness: 0.8
+                    });
+                }
+
+                if (child.isMesh || child.isLine || child.isPoints) {
+                    const attrs = child.userData?.attributes || {};
+                    const layerIndex = attrs.layerIndex;
+                    const layerInfo = layers[layerIndex];
+                    const layerName = layerInfo?.name || layerInfo?.fullPath || 'Default';
+
+                    let partName = child.name;
+                    if (!partName) partName = attrs.name || `Object_${child.id}`;
+
+                    child.userData.designBuddy = {
+                        partName,
+                        layerName,
+                        originalRhinoLayerIndex: layerIndex ?? null,
+                        originalRhinoObjectId: attrs.id || null,
+                        objectType: child.type,
+                        isSelectable: true
+                    };
+
+                    child.name = `${layerName}/${partName}`;
                 }
             });
 
+            // Forward layer table to the root for the app to consume
+            root.userData.rhinoLayers = layers;
             root.add(object);
             resolve(root);
         }, (error) => {

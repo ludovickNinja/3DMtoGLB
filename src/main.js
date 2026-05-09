@@ -145,7 +145,7 @@ class App {
         meshes.forEach((mesh) => {
             if (!mesh.userData.designBuddy) {
                 mesh.userData.designBuddy = {
-                    partName: mesh.name || 'Unnamed',
+                    partName: mesh.name || `Object_${mesh.id}`,
                     layerName: 'Default',
                     originalRhinoLayerIndex: null,
                     originalRhinoObjectId: null,
@@ -154,13 +154,9 @@ class App {
                 };
             }
 
-            // Ensure name exists
-            if (!mesh.name) {
-                mesh.name = `Object_${mesh.id}`;
-            }
-
-            // Update object name to include layer and part name
             const metadata = mesh.userData.designBuddy;
+            if (!metadata.partName) metadata.partName = `Object_${mesh.id}`;
+            if (!metadata.layerName) metadata.layerName = 'Default';
             mesh.name = `${metadata.layerName}/${metadata.partName}`;
         });
     }

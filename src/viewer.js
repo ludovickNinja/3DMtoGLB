@@ -1,3 +1,6 @@
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
 export class Viewer {
     constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
@@ -36,18 +39,16 @@ export class Viewer {
     }
 
     setupControls() {
-        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.autoRotate = false;
     }
 
     setupLighting() {
-        // Ambient light
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
         this.scene.add(ambientLight);
 
-        // Directional light
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
         directionalLight.position.set(100, 100, 100);
         directionalLight.castShadow = true;
@@ -55,7 +56,6 @@ export class Viewer {
         directionalLight.shadow.mapSize.height = 2048;
         this.scene.add(directionalLight);
 
-        // Point light for fill
         const pointLight = new THREE.PointLight(0xffffff, 0.4);
         pointLight.position.set(-100, 100, -100);
         this.scene.add(pointLight);
