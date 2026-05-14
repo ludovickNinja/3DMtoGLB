@@ -1,5 +1,21 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
+import { isDiamondMaterial } from './diamondMaterial.js';
+
+function swapDiamondMaterials(root) {
+    const swaps = [];
+    root.traverse((child) => {
+        if (child.isMesh && isDiamondMaterial(child.material) && child.userData.originalMaterial) {
+            swaps.push({ mesh: child, diamond: child.material });
+            child.material = child.userData.originalMaterial;
+        }
+    });
+    return () => {
+        for (const { mesh, diamond } of swaps) {
+            mesh.material = diamond;
+        }
+    };
+}
 
 export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
     return new Promise((resolve, reject) => {
@@ -30,9 +46,12 @@ export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
             includeCustomExtensions: true
         };
 
+        const restore = swapDiamondMaterials(exportRoot);
+
         exporter.parse(
             exportRoot,
             (gltf) => {
+                restore();
                 const blob = new Blob([gltf], { type: 'application/octet-stream' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -46,6 +65,7 @@ export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
                 resolve();
             },
             (error) => {
+                restore();
                 reject(new Error(`GLB export failed: ${error.message || error}`));
             },
             options

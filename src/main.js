@@ -6,6 +6,7 @@ import { initLayerManager } from './layerManager.js';
 import { exportGLB } from './exporter.js';
 import { fitCamera, resetCamera, initSceneTools } from './sceneTools.js';
 import { MATERIAL_PRESETS, applyMaterialPreset, getPresetsList } from './materialPresets.js';
+import { applyDiamondMaterial, restoreOriginalMaterial, isDiamondMaterial } from './diamondMaterial.js';
 
 class App {
     constructor() {
@@ -410,7 +411,28 @@ class App {
 
     applyMaterialPreset(presetKey) {
         if (!this.selectedObject?.material) return;
-        applyMaterialPreset(this.selectedObject.material, presetKey);
+
+        const mesh = this.selectedObject;
+        const preset = MATERIAL_PRESETS[presetKey];
+
+        if (presetKey === 'diamond' && mesh.isMesh && mesh.geometry) {
+            applyDiamondMaterial(mesh, {
+                color: preset.color,
+                bounces: 3,
+                ior: 2.4,
+                aberrationStrength: Math.max(preset.dispersion ?? 0.02, 0.005),
+                fastChroma: false
+            });
+            this.updateInspector();
+            this.viewer.render();
+            return;
+        }
+
+        if (isDiamondMaterial(mesh.material)) {
+            restoreOriginalMaterial(mesh);
+        }
+
+        applyMaterialPreset(mesh.material, presetKey);
         this.updateInspector();
         this.viewer.render();
     }
