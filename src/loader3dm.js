@@ -17,6 +17,9 @@ export async function load3DMFile(arrayBuffer) {
             const root = new THREE.Group();
             root.name = 'ModelRoot';
 
+            // Rhino is Z-up, Three.js is Y-up: rotate so Rhino's Z axis becomes Three's Y axis
+            root.rotation.x = -Math.PI / 2;
+
             // Layer table from the 3dm file: [{ name, color, visible, ... }, ...]
             const layers = object.userData?.layers || [];
 

@@ -31,6 +31,7 @@ export class Viewer {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.toneMappingExposure = 1.2;
     }
 
     setupCamera() {
@@ -46,24 +47,31 @@ export class Viewer {
     }
 
     setupLighting() {
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
         this.scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x8d8d9a, 1.2);
+        this.scene.add(hemisphereLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 2.0);
         directionalLight.position.set(100, 100, 100);
         directionalLight.castShadow = true;
         directionalLight.shadow.mapSize.width = 2048;
         directionalLight.shadow.mapSize.height = 2048;
         this.scene.add(directionalLight);
 
-        const pointLight = new THREE.PointLight(0xffffff, 0.4);
+        const fillLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        fillLight.position.set(-100, 60, -80);
+        this.scene.add(fillLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 0.6);
         pointLight.position.set(-100, 100, -100);
         this.scene.add(pointLight);
     }
 
     setupScene() {
-        this.scene.background = new THREE.Color(0x1a1a1a);
-        this.scene.fog = new THREE.Fog(0x1a1a1a, 0, 2000);
+        this.scene.background = new THREE.Color(0x35353c);
+        this.scene.fog = new THREE.Fog(0x35353c, 0, 2000);
     }
 
     setupResizeHandler() {

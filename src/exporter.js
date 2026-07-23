@@ -25,12 +25,24 @@ export async function exportGLB(modelRoot, fileName, visibleOnly = false) {
             exportRoot = new THREE.Group();
             exportRoot.name = modelRoot.name;
 
+            modelRoot.updateMatrixWorld(true);
             modelRoot.traverse((child) => {
                 if (child === modelRoot) return;
 
                 if (child.visible && (child.isMesh || child.isLine || child.isPoints)) {
                     const clone = child.clone();
-                    clone.userData = JSON.parse(JSON.stringify(child.userData || {}));
+
+                    if (isDiamondMaterial(child.material) && child.userData.originalMaterial) {
+                        clone.material = child.userData.originalMaterial;
+                    }
+
+                    const { originalMaterial, ...serializableUserData } = child.userData || {};
+                    clone.userData = JSON.parse(JSON.stringify(serializableUserData));
+
+                    // Bake the full world transform (including the Z-up to Y-up
+                    // root rotation) since clones are re-parented to a flat group
+                    child.matrixWorld.decompose(clone.position, clone.quaternion, clone.scale);
+
                     exportRoot.add(clone);
                 }
             });
