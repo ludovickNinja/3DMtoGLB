@@ -419,9 +419,7 @@ class App {
             applyDiamondMaterial(mesh, {
                 color: preset.color,
                 bounces: 3,
-                ior: 2.4,
-                aberrationStrength: Math.max(preset.dispersion ?? 0.02, 0.005),
-                fastChroma: false
+                ior: 2.4
             });
             this.updateInspector();
             this.viewer.render();

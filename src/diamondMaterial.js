@@ -83,12 +83,10 @@ const fragmentShader = /* glsl */ `
     uniform BVH bvh;
     uniform float ior;
     uniform vec3 color;
-    uniform bool fastChroma;
     uniform mat4 projectionMatrixInv;
     uniform mat4 viewMatrixInv;
     uniform mat4 modelMatrix;
     uniform vec2 resolution;
-    uniform float aberrationStrength;
 
     vec3 totalInternalReflection( vec3 incomingOrigin, vec3 incomingDirection, vec3 normal, float ior, mat4 modelMatrixInverse ) {
         vec3 rayOrigin = incomingOrigin;
@@ -137,30 +135,9 @@ const fragmentShader = /* glsl */ `
         vec3 rayOrigin = cameraPosition;
         vec3 rayDirection = normalize( vWorldPosition - cameraPosition );
 
-        if ( aberrationStrength != 0.0 ) {
-            vec3 rayDirectionG = totalInternalReflection( rayOrigin, rayDirection, normal, max( ior, 1.0 ), modelMatrixInverse );
-            vec3 rayDirectionR, rayDirectionB;
-
-            if ( fastChroma ) {
-                rayDirectionR = normalize( rayDirectionG + 1.0 * vec3( aberrationStrength / 2.0 ) );
-                rayDirectionB = normalize( rayDirectionG - 1.0 * vec3( aberrationStrength / 2.0 ) );
-            } else {
-                float iorR = max( ior * ( 1.0 - aberrationStrength ), 1.0 );
-                float iorB = max( ior * ( 1.0 + aberrationStrength ), 1.0 );
-                rayDirectionR = totalInternalReflection( rayOrigin, rayDirection, normal, iorR, modelMatrixInverse );
-                rayDirectionB = totalInternalReflection( rayOrigin, rayDirection, normal, iorB, modelMatrixInverse );
-            }
-
-            float r = envSample( envMap, rayDirectionR ).r;
-            float g = envSample( envMap, rayDirectionG ).g;
-            float b = envSample( envMap, rayDirectionB ).b;
-            gl_FragColor.rgb = vec3( r, g, b ) * color;
-            gl_FragColor.a = 1.0;
-        } else {
-            rayDirection = totalInternalReflection( rayOrigin, rayDirection, normal, max( ior, 1.0 ), modelMatrixInverse );
-            gl_FragColor.rgb = envSample( envMap, rayDirection ).rgb * color;
-            gl_FragColor.a = 1.0;
-        }
+        rayDirection = totalInternalReflection( rayOrigin, rayDirection, normal, max( ior, 1.0 ), modelMatrixInverse );
+        gl_FragColor.rgb = envSample( envMap, rayDirection ).rgb * color;
+        gl_FragColor.a = 1.0;
 
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
@@ -175,9 +152,7 @@ export function createDiamondMaterial(geometry, options = {}) {
     const {
         color = 0xffffff,
         bounces = 3,
-        ior = 2.4,
-        aberrationStrength = 0.02,
-        fastChroma = false
+        ior = 2.4
     } = options;
 
     if (!geometry.boundsTree) {
@@ -196,9 +171,7 @@ export function createDiamondMaterial(geometry, options = {}) {
             resolution: { value: new THREE.Vector2(1, 1) },
             bounces: { value: bounces },
             ior: { value: ior },
-            color: { value: new THREE.Color(color) },
-            fastChroma: { value: fastChroma },
-            aberrationStrength: { value: aberrationStrength }
+            color: { value: new THREE.Color(color) }
         },
         vertexShader,
         fragmentShader
@@ -213,12 +186,6 @@ export function createDiamondMaterial(geometry, options = {}) {
             if (v && v.isColor) material.uniforms.color.value.copy(v);
             else material.uniforms.color.value.set(v);
         }
-    });
-
-    Object.defineProperty(material, 'dispersion', {
-        configurable: true,
-        get() { return material.uniforms.aberrationStrength.value; },
-        set(v) { material.uniforms.aberrationStrength.value = v; }
     });
 
     Object.defineProperty(material, 'ior', {

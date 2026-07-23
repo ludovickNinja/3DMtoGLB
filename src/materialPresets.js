@@ -5,7 +5,7 @@ export const MATERIAL_PRESETS = {
         color: 0xFFFFFF,
         metalness: 0,
         roughness: 0.05,
-        dispersion: 0.3
+        dispersion: 0
     },
     sapphire: {
         name: 'Sapphire (Blue)',
