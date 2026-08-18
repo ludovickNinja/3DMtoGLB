@@ -14,12 +14,35 @@ export function initSceneTools(scene) {
     scene.add(axesHelper);
 }
 
-export function fitCamera(camera, controls, modelRoot) {
+// Adapt the camera lens to the model's size: small pieces (jewelry) get a
+// narrow portrait-style lens with little perspective distortion, large models
+// get a wider one. Near/far planes and fog scale with the bounds so depth
+// precision stays usable at any scale.
+export function adaptCameraToModel(camera, maxDim, scene = null) {
+    if (!maxDim || !isFinite(maxDim)) return;
+
+    // maxDim <= 100 units -> 30deg, maxDim >= 10000 -> 60deg, log-interpolated
+    const t = THREE.MathUtils.clamp((Math.log10(maxDim) - 2) / 2, 0, 1);
+    camera.fov = THREE.MathUtils.lerp(30, 60, t);
+
+    camera.near = THREE.MathUtils.clamp(maxDim / 100, 0.001, 1);
+    camera.far = Math.max(maxDim * 50, 2000);
+    camera.updateProjectionMatrix();
+
+    if (scene?.fog) {
+        scene.fog.far = camera.far;
+    }
+}
+
+export function fitCamera(camera, controls, modelRoot, scene = null) {
     if (!modelRoot) return;
 
     const box = new THREE.Box3().expandByObject(modelRoot);
     const size = box.getSize(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
+
+    adaptCameraToModel(camera, maxDim, scene);
+
     const fov = camera.fov * (Math.PI / 180);
     let cameraZ = maxDim / 2 / Math.tan(fov / 2);
 

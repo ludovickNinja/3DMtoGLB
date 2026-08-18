@@ -116,7 +116,7 @@ class App {
             this.buildObjectList();
 
             // Fit camera to model
-            fitCamera(this.viewer.camera, this.viewer.controls, this.activeModelRoot);
+            fitCamera(this.viewer.camera, this.viewer.controls, this.activeModelRoot, this.viewer.scene);
 
             // Initialize selection and inspector
             initSelection(this.viewer, this.activeModelRoot, (selected) => {
@@ -564,7 +564,7 @@ class App {
         });
 
         document.getElementById('fitBtn').addEventListener('click', () => {
-            fitCamera(this.viewer.camera, this.viewer.controls, this.activeModelRoot);
+            fitCamera(this.viewer.camera, this.viewer.controls, this.activeModelRoot, this.viewer.scene);
         });
 
         document.getElementById('resetCameraBtn').addEventListener('click', () => {
